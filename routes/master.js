@@ -52,6 +52,33 @@ router
 		.catch( err => {console.log(err)})
 	});
 
+router
+	.route('/top5product')
+	.get( (req, res) => {
+		var	profile = {
+			user : req.body.userid,
+			url  : '/master' + req.url || '',
+		}
+		console.log(profile);
+
+		db.top5product()
+		.then(data => {
+			//console.log(data)
+			let i = req.query.isjson;
+			//console.log('JSON : ', i)
+			if(i==0){
+				res.status(200).send(dt = data);
+			} else {
+				dt = JSON.stringify(data);
+				res.status(200).json({
+					message: 'Token verified...',
+					dt
+				});
+			}
+		})
+		.catch( err => {console.log(err)})
+	});
+	
 // Master Customer	
 router
 .route('/customer')
