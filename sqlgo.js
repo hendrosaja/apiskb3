@@ -44,7 +44,7 @@ async function findUserSFA(userid) {
       data.isprofile = 0
     }
     
-    console.log(data);
+    //console.log(data);
     return data;
   } catch (error) {
     return error;
@@ -147,8 +147,20 @@ async function productList(par) {
 	}
 };
 
+async function top5product() {
+	try {
+    const data = await db.any(q.tb_product.top5);
+    //console.log(data);
+    return data;
+	}
+	catch (error) {
+		console.log('ERROR:', error);
+	}
+};
+
 module.exports = {
   findUser, findUserSFA, changePasswd, addProfile, getProfile, 
   salesUserList, getSubOrdinate,
-  productList, customerList, customerInfo
+  productList, top5product,
+  customerList, customerInfo
 }
