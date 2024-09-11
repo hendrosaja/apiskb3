@@ -273,8 +273,7 @@ app.get('/getprofile', roles.authToken, (req, res) => {
   })  
 });
 
-
 app.listen(process.env.PORT, () => {
-  console.log(`APISKB3 running at http://10.10.31.102:${process.env.PORT}`)
+  console.log(`APISKB3 running at http://${process.env.HOST}:${process.env.PORT}`)
 });
  

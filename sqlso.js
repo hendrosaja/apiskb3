@@ -106,7 +106,6 @@ async function getQuotationByProduct(par) {
 	}
 };
 
-
 async function getQuotationDtl(par) {
 	try {
 		const data = await db.any(qso.order.quotationdetail, {par});
@@ -140,6 +139,32 @@ async function setQuotationStatus(par) {
 	}catch (error) {
 		console.log('Error saat mengupdate data ' + error);
 		return 'Error';
+	}
+};
+
+//Sales Order
+async function getSalesOrder(par) {
+	try {
+		const data = await db.any(qso.order.salesOrder, {par});
+		//console.log(data);
+		for (let i = 0; i < data.length; i++) {
+			data[i].tgl_dtz = moment(data[i].so_date).format('YYYY-MM-DD');
+		}
+		return data;
+	}
+	catch (error) {
+		console.log('DB Error:', error);
+	}
+};
+
+async function getSalesOrderDtl(par) {
+	try {
+		const data = await db.any(qso.order.salesOrderDtl, {par});
+		//console.log(data);
+		return data;
+	}
+	catch (error) {
+		console.log('DB Error:', error);
 	}
 };
 
@@ -331,6 +356,7 @@ module.exports = {
   viewBasketByUser, addBasket, updBasket, delBasket, updBasketCustomer,
 	genQuotation, copyQuotation, getQuotationByDate, getQuotationByProduct,
 	getQuotationDtl, setQuotationStatus,
+	getSalesOrder, getSalesOrderDtl,
 	getStockByLocation,
 	getDeliveryByDate, getDeliveryDtl, getPhoto, addPhoto, delPhoto, setDelivered,
 	getVisitPlan, addVisitPlan, 
