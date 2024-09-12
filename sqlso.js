@@ -146,10 +146,6 @@ async function setQuotationStatus(par) {
 async function getSalesOrder(par) {
 	try {
 		const data = await db.any(qso.order.salesOrder, {par});
-		//console.log(data);
-		for (let i = 0; i < data.length; i++) {
-			data[i].tgl_dtz = moment(data[i].so_date).format('YYYY-MM-DD');
-		}
 		return data;
 	}
 	catch (error) {
@@ -285,6 +281,12 @@ async function addVisitPlan(par) {
 async function getSalesVisit(par) {
 	try {
     const data = await dbsfa.any(qso.visit.getListVisit, {par});
+		for (let i = 0; i < data.length; i++) {
+			(data[i].checkin=='-' || data[i].checkout=='-') 
+			? data[i].status = 'Open'
+			: data[i].status = 'Completed' 
+		}
+		console.log(data)
     return data;
   } catch (error) {
     return error;

@@ -343,6 +343,7 @@ router
 			url       : '/sales' + req.url || '',
 		}
 		const b  = req.body;
+		
 		if (!b.custname) {
 			b.customer = '%'
 			//console.log(b);
