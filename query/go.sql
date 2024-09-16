@@ -2,6 +2,7 @@
   "tb_user":{
     "selectById" : "select cast(coalesce(real_name,userid) as varchar(50)) as namauser, coalesce(mailshow,'0') email, * from tb_user where userid = $1 and coalesce(mailshow,'0') <> '0'",
     "selectBySFA": "select cast(coalesce(real_name,userid) as varchar(50)) as namauser, coalesce(mailshow,'0') email, * from tb_user where userid = $1 and coalesce(mailshow,'0') <> '0' and company_access like '%;SFA;%'",
+    "addLogger"  : "insert into tb_logs(tgl, modul, notes, ivalue, userid) values (current_timestamp, ${par.modul}, ${par.notes}, ${par.ivalue}, ${par.userid}) returning userid;",
     "userInfo"  : "select slsman_id as id_people, slsman_nm sales_nm, (select slsmanpos_nm from tb_m_slsmanpos where slsmanpos_cd=a.slsmanpos_cd) sposition from tb_m_slsman a where slsman_id = $1",
     "changePasswd": "select bi.changepassword(${par.userid}, ${par.password}, ${par.newpassword}) as stat",
     "addprofile": "select addprofile(${par.userid}, ${par.photo});",

@@ -286,7 +286,7 @@ async function getSalesVisit(par) {
 			? data[i].status = 'Open'
 			: data[i].status = 'Completed' 
 		}
-		console.log(data)
+		// console.log(data)
     return data;
   } catch (error) {
     return error;

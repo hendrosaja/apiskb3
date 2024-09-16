@@ -121,6 +121,7 @@ app.post('/login', (req, res) => {
 app.post('/loginsfa', (req, res) => { //10014
   //console.log(req.headers);
   let ver = req.headers.version;
+  let device = req.headers.deviceid || 'Unknown';
 
   if (ver < 10013) {
     console.log(`Forbidden, SFA version ${ver} expired!`);
@@ -141,10 +142,8 @@ app.post('/loginsfa', (req, res) => { //10014
   .toString()
   .split(':');
   //console.log(usrHeader) //(usrHeader); //authheader
-
   let user = dm.findUserSFA(usrHeader[0])
   let pwd = usrHeader[1]
-
   //console.log(ver)
   user.then(isValid => {
     if (isValid) {
@@ -163,13 +162,30 @@ app.post('/loginsfa', (req, res) => { //10014
           isprofile    : isValid.isprofile,
           division_access: isValid.division_access
         }
-
+        //console.log(authData)
         let message = 'Success'
         let accessToken  = roles.generateAccessToken({userid : isValid.userid})
         //jwt.sign( {userid : isValid.userid}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '20s' })
         let refreshToken = jwt.sign( {userid : isValid.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '24h' })
         roles.refreshTokenList.push(refreshToken)
         //console.log(roles.refreshTokenList)
+
+        //Add Logger modul, notes, ivalue, userid
+        var logger = {
+          modul : 'GO_001',
+          notes : `SFA ${ver}, DeviceID = ${device}`,
+          ivalue: 1,
+          userid: authData.userid,
+          deviceid : device
+        }
+
+        dm.addLogger(logger)
+        .then(result => {
+          console.log(`${device} logged on`)
+        })
+        .catch((err) => {
+          console.log('Error insert data logger!')
+        })          
 
         return res.status(201).json({message, authData, accessToken, refreshToken})
       } else {
@@ -250,8 +266,7 @@ app.post('/addprofile', roles.authToken, (req, res) => {
 
 app.get('/getprofile', roles.authToken, (req, res) => {
   var data = req.body;
-  console.log(data);
-
+  //console.log(data);
   dm.getProfile(data)
   .then(result => {
     if (result.length === 0) {

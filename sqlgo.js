@@ -51,6 +51,17 @@ async function findUserSFA(userid) {
   }
 };
 
+async function addLogger(par) {
+  //console.log(par);
+	try{
+		const data =  await dbsfa.any(q.tb_user.addLogger, {par});
+		//console.log(data);
+		return data;
+	}catch (error) {
+		console.log('Error saat menginsert data ' + error);
+		return 'Error';
+	}
+};
 
 async function changePasswd(par) {
 	try{
@@ -159,7 +170,8 @@ async function top5product() {
 };
 
 module.exports = {
-  findUser, findUserSFA, changePasswd, addProfile, getProfile, 
+  findUser, findUserSFA, addLogger, changePasswd, 
+  addProfile, getProfile, 
   salesUserList, getSubOrdinate,
   productList, top5product,
   customerList, customerInfo
