@@ -39,5 +39,11 @@
     "getAttendance": "select trim(left(to_char(a.tgl, 'DAY'),3)) hari, to_char(a.tgl, 'DD') tg, to_char(a.tgl, 'Mon') bln, coalesce(to_char(time_in, 'HH24:MI'),'') masuk, coalesce(to_char(time_out, 'HH24:MI'),'') pulang, '' status from (select * from generate_series(cast(${par.start_dt} as date), cast(${par.end_dt} as date), '1 day') as tgl) a left outer join (select tgl, time_in, time_out, status from bi.tb_attendance where id_sales = ${par.idpeople} and tgl between ${par.start_dt} and ${par.end_dt} ) b on cast(b.tgl as date)=cast(a.tgl as date) order by a.tgl desc", 
     "attStatus" : "select bi.att_status(${par.idpeople}) as stat;",
     "addAbsensi": "select bi.add_absensi(${par.idpeople}, ${par.userid}, ${par.photo}, ${par.lat}, ${par.long}) as stat;"
+  },
+  "leads": {
+    "getLeads": "select * from tb_leads where name ilike ${par.txt} order by name",
+    "getLeadsById": "select * from tb_leads where id_people = ${par.idpeople}",
+    "addLeads": "insert into tb_leads(id_people, name, address, lat, lng, phone, email, userid, last_update) values ((select coalesce(max(id_people), 0) + 1 from tb_leads), ${par.name}, ${par.address}, ${par.lat}, ${par.long}, ${par.phone}, ${par.email}, ${par.userid}, current_timestamp) returning id_people;",
+    "updateLeads" : "update tb_leads set address = ${par.address}, phone = ${par.phone}, email = ${par.email} where id_people = ${par.idpeople} returning id_people;"
   }
 }

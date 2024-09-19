@@ -762,5 +762,83 @@ router
 		})
   });
 
+// Modul Leads
+router
+  .route('/leads')
+	.get((req, res) => {
+		var data = req.body;
+		//console.log(data);
+		data.txt  = '%'+ req.body.customer + '%';
+
+		dm.getLeads(data)
+		.then(result => {
+			//console.log(result)
+			let i = req.query.isjson;
+			//console.log('JSON : ', i)
+			if(i==0){
+				res.status(200).send(dt = result);
+			} else {
+				dt = JSON.stringify(result);
+				res.status(200).json({
+					message: 'Token verified...',
+					dt
+				});
+			}
+		})
+		.catch((err) => {
+			res.sendStatus(404, 'Data not found')
+		})
+	})
+	.post((req, res) => {
+    var data = req.body;
+		//console.log(data);
+
+		dm.addLeads(data)
+		.then(result => {
+			console.log(result)
+			var dt = JSON.stringify(result)
+			res.send(dt);
+		})
+  })
+	.put((req, res) => {
+    var data = req.body;
+		console.log(data);
+
+		dm.updLeads(data)
+		.then(result => {
+			console.log(result)
+			var dt = JSON.stringify(result)
+			res.send(dt);
+		})
+  });
+
+router
+  .route('/leadsdetail')	
+	.get((req, res) => {
+		var data = req.body;
+		//console.log(data);
+
+		dm.getLeadsById(data)
+		.then(result => {
+			if (result.length === 0) {
+				//console.log('Record : 0');
+				res.status(200).json({dt:[], rec: 0});
+			} else {
+				var rec = result.length;
+
+				dt = JSON.stringify(result);
+				//console.log(dt);
+				//console.log('Record', rec);
+
+				res.status(200).json({
+					dt, rec
+				});
+			}
+		})
+		.catch((err) => {
+			res.sendStatus(404, 'Data not found')
+		})
+	});
+
 module.exports = router;
 

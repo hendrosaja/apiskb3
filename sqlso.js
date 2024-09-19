@@ -353,6 +353,47 @@ async function getAttendance(par) {
   }
 };
 
+// Modul Leads
+async function getLeads(par) {
+	console.log(par)
+	try {
+    const data = await dbsfa.any(qso.leads.getLeads, {par});
+		//console.log(data)
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+async function getLeadsById(par) {
+	try {
+    const data = await dbsfa.any(qso.leads.getLeadsById, {par});
+		// console.log(data)
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+async function addLeads(par) {
+	try {
+    const data = await dbsfa.any(qso.leads.addLeads, {par});
+    return data;
+  }
+	catch (error) {
+		return error;
+	}
+};
+
+async function updLeads(par) {
+	try {
+    const data = await dbsfa.any(qso.leads.updateLeads, {par});
+    return data;
+  }
+	catch (error) {
+		return error;
+	}
+};
 
 module.exports = {
   viewBasketByUser, addBasket, updBasket, delBasket, updBasketCustomer,
@@ -363,5 +404,6 @@ module.exports = {
 	getDeliveryByDate, getDeliveryDtl, getPhoto, addPhoto, delPhoto, setDelivered,
 	getVisitPlan, addVisitPlan, 
 	getSalesVisit,addSalesVisit,cekVisit, getVisitDetail,
-	cekAttendance, addAttendance, getAttendance
+	cekAttendance, addAttendance, getAttendance,
+	getLeads, getLeadsById, addLeads, updLeads
 }

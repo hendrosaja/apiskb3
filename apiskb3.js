@@ -118,12 +118,12 @@ app.post('/login', (req, res) => {
   })
 });
 
-app.post('/loginsfa', (req, res) => { //10014
+app.post('/loginsfa', (req, res) => { 
   //console.log(req.headers);
   let ver = req.headers.version;
   let device = req.headers.deviceid || 'Unknown';
 
-  if (ver < 10013) {
+  if (ver < 10014) {
     console.log(`Forbidden, SFA version ${ver} expired!`);
     console.log('---------------------------------');
     let message = 'UNAUTHORIZED version control'
