@@ -246,10 +246,10 @@ async function setDelivered(par) {
 async function getVisitPlan(par) {
 	try {
     const data = await dbsfa.any(qso.visit.getVisitPlan, {par});
-		//console.log(data);
+		console.log(data);
+		/* // Untuk mengambil dari Master Customer beda DB
 		for (let i = 0; i < data.length; i++) {
 			 //console.log(data[i].id_customer)
-
 			try {
 				let datacust = await db.any(qgo.tb_customer.peopleName, data[i].id_customer);
 				//console.log(datacust[0].nama)
@@ -260,7 +260,7 @@ async function getVisitPlan(par) {
 				console.log(err)
 			}
 		}
-
+		*/
     return data;
   } catch (error) {
     return error;
