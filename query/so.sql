@@ -28,11 +28,11 @@
   },
   "visit": {
     "getListVisit_old": "select to_char(tanggal, 'yyyy-mm-dd HH24:MI:SS') tgl, photo, userid, status from tb_sales_visit where status in ('CHECK IN','CHECK OUT') and tanggal between ${par.start_dt}::date and (${par.end_dt}::date||' 23:59:59')::timestamp order by tanggal desc",
-    "getListVisit": "select nomor, userid, to_char(min(tanggal), 'yyyy-mm-dd') tgl, max(case when status = 'CHECK IN' then to_char(tanggal, 'yyyy-mm-dd HH24:MI:SS') else '-' end) checkin, max(case when status = 'CHECK OUT' then to_char(tanggal, 'yyyy-mm-dd HH24:MI:SS') else '-' end) checkout, to_char(max(tanggal) - min(tanggal), 'HH24:MI:SS') durasi, coalesce((select name from tb_leads where id_people = (select id_customer from tb_visit_plan where nomor = a.nomor)), '-') custname from tb_sales_visit a where status in ('CHECK IN','CHECK OUT') and tanggal between ${par.start_dt}::date and (${par.end_dt}::date||' 23:59:59')::timestamp group by nomor, userid order by nomor desc",
+    "getListVisit": "select nomor, userid, to_char(min(tanggal), 'yyyy-mm-dd') tgl, max(case when status = 'CHECK IN' then to_char(tanggal, 'yyyy-mm-dd HH24:MI:SS') else '-' end) checkin, max(case when status = 'CHECK OUT' then to_char(tanggal, 'yyyy-mm-dd HH24:MI:SS') else '-' end) checkout, to_char(max(tanggal) - min(tanggal), 'HH24:MI:SS') durasi, (select id_customer from tb_visit_plan where nomor = a.nomor) id_customer, (select islead from tb_visit_plan where nomor = a.nomor) islead from tb_sales_visit a where status in ('CHECK IN','CHECK OUT') and tanggal between ${par.start_dt}::date and (${par.end_dt}::date||' 23:59:59')::timestamp group by nomor, userid order by nomor desc",
     "visitStatus" : "select visit_status(${par.userid}, ${par.nomor}) as stat;",
     "checkinout": "select addvisit(${par.userid}, ${par.photo}, ${par.lat}, ${par.long}, ${par.address}, ${par.notes}, ${par.status}, ${par.nomor});",
-    "getVisitPlan": "select nomor, salesid, tanggal, id_customer, (select name from tb_leads where id_people = a.id_customer) as scustomer from tb_visit_plan a where to_char(tanggal,'yyyymm') = ${par.periode} order by tanggal",
-    "addVisitPlan": "select gen_visitplan(${par.salesid}, ${par.tanggal}, ${par.id_customer}, ${par.created_by}) as nomor",
+    "getVisitPlan": "select nomor, salesid, tanggal, id_customer, islead, case when islead=0 then (select name from tb_m_people where id_people = a.id_customer) when islead=1 then (select name from tb_leads where id_people = a.id_customer) end as scustomer from tb_visit_plan a where to_char(tanggal,'yyyymm') = ${par.periode} order by tanggal",
+    "addVisitPlan": "select gen_visitplan(${par.salesid}, ${par.tanggal}, ${par.id_customer}, ${par.created_by}, ${par.islead}) as nomor",
     "visitDetail":"select coalesce(inpic,'-') inpic, coalesce(outpic,'-') outpic, coalesce(notes,'-') notes from (select (select photo from tb_sales_visit where status = 'CHECK IN' and nomor = ${par.nomor}) inpic, (select photo outpic from tb_sales_visit where status = 'CHECK OUT' and nomor = ${par.nomor}), (select notes from tb_sales_visit where status = 'CHECK OUT' and nomor = ${par.nomor})) a"
   },
   "attendance": {
@@ -41,9 +41,9 @@
     "addAbsensi": "select bi.add_absensi(${par.idpeople}, ${par.userid}, ${par.photo}, ${par.lat}, ${par.long}) as stat;"
   },
   "leads": {
-    "getLeads": "select * from tb_leads where name ilike ${par.txt} order by name",
-    "getLeadsById": "select * from tb_leads where id_people = ${par.idpeople}",
-    "addLeads": "insert into tb_leads(id_people, name, address, lat, lng, phone, email, userid, last_update) values ((select coalesce(max(id_people), 0) + 1 from tb_leads), ${par.name}, ${par.address}, ${par.lat}, ${par.long}, ${par.phone}, ${par.email}, ${par.userid}, current_timestamp) returning id_people;",
-    "updateLeads" : "update tb_leads set address = ${par.address}, phone = ${par.phone}, email = ${par.email} where id_people = ${par.idpeople} returning id_people;"
+    "getLeads": "select x.* from ( select 1 islead, id_people, name, address, phone, email from bi.tb_leads union all select 0 islead, a.id_people, name, address, phone, email from tb_m_people a left join tb_m_customersdata b on a.id_people = b.id_people where is_customer = '1' and active_stat = 'Active' and name not like '%**' and b.slsgrp_id in (select getslsareacvrg_id(${par.user})) ) x where name ilike ${par.txt} order by name",
+    "getLeadsById": "select * from bi.tb_leads where id_people = ${par.idpeople}",
+    "addLeads": "insert into bi.tb_leads(id_people, name, address, lat, lng, phone, email, userid, last_update) values ((select coalesce(max(id_people), 0) + 1 from bi.tb_leads), ${par.name}, ${par.address}, ${par.lat}, ${par.long}, ${par.phone}, ${par.email}, ${par.userid}, current_timestamp) returning id_people;",
+    "updateLeads" : "update bi.tb_leads set address = ${par.address}, phone = ${par.phone}, email = ${par.email} where id_people = ${par.idpeople} returning id_people;"
   }
 }

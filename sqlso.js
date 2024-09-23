@@ -279,14 +279,25 @@ async function addVisitPlan(par) {
 };
 
 async function getSalesVisit(par) {
+	//console.log(par)
 	try {
     const data = await dbsfa.any(qso.visit.getListVisit, {par});
 		for (let i = 0; i < data.length; i++) {
+			const ilead = data[i].islead;
+			const idcust = data[i].id_customer;
+			let customer = '-';
+
 			(data[i].checkin=='-' || data[i].checkout=='-') 
 			? data[i].status = 'Open'
-			: data[i].status = 'Completed' 
+			: data[i].status = 'Completed' ;
+
+			(ilead==0)
+			? customer = await db.one(qgo.tb_customer.peopleName, idcust)
+			: customer = await db.one(qgo.tb_customer.leadName, idcust);
+
+			data[i].custname = customer.nama;
 		}
-		// console.log(data)
+		 console.log(data)
     return data;
   } catch (error) {
     return error;
@@ -357,7 +368,7 @@ async function getAttendance(par) {
 async function getLeads(par) {
 	console.log(par)
 	try {
-    const data = await dbsfa.any(qso.leads.getLeads, {par});
+    const data = await db.any(qso.leads.getLeads, {par});
 		//console.log(data)
     return data;
   } catch (error) {
@@ -367,7 +378,7 @@ async function getLeads(par) {
 
 async function getLeadsById(par) {
 	try {
-    const data = await dbsfa.any(qso.leads.getLeadsById, {par});
+    const data = await db.any(qso.leads.getLeadsById, {par});
 		// console.log(data)
     return data;
   } catch (error) {
@@ -377,7 +388,7 @@ async function getLeadsById(par) {
 
 async function addLeads(par) {
 	try {
-    const data = await dbsfa.any(qso.leads.addLeads, {par});
+    const data = await db.any(qso.leads.addLeads, {par});
     return data;
   }
 	catch (error) {
@@ -387,7 +398,7 @@ async function addLeads(par) {
 
 async function updLeads(par) {
 	try {
-    const data = await dbsfa.any(qso.leads.updateLeads, {par});
+    const data = await db.any(qso.leads.updateLeads, {par});
     return data;
   }
 	catch (error) {

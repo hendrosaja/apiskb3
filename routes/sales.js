@@ -563,7 +563,7 @@ router
   .route('/visitplan')
 	.get((req, res) => {
 		var data = req.body;
-		console.log(data);
+		//console.log(data);
 
 		dm.getVisitPlan(data)
 		.then(result => {
