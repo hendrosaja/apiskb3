@@ -453,17 +453,24 @@ router
 		//b.sonumber = 'SO-00002';
 		//console.log(b);
 		dm.getDeliveryDtl(b)
-		.then(data => {
+		.then(result => {
+			console.log(result.note.dofnote);
+
 			let i = req.query.isjson;
+			let rec = 0;
+      (result.data.length !== 0 ) 
+			? rec = result.data.length
+			: rec = 0;
 
 			if(i==0){
-				res.status(200).send(dt = data);
+				res.status(200).send(dt = result.data);
 			} else {
-				dt = JSON.stringify(data);
+				dt = JSON.stringify(result.data);
 				//console.log(dt);
 				res.status(200).json({
 					message: 'Token verified...',
-					dt
+					dt, rec,
+					note : result.note.dofnote
 				});
 			}			
 		})
@@ -504,6 +511,36 @@ router
 		})
 
 	});
+
+router
+	.route('/updatedof')
+	.put( (req, res) => {
+		const b  = req.body;
+		//console.log('Post @Route: ', b);
+
+		dm.updateNotes(b)
+		.then(result => {
+			console.log('Updated :', b.notes);
+			if (result === 'Error') { return res.sendStatus(204);}
+
+			let i = req.query.isjson;
+			if(i==0){
+				res.status(200).send(dt = result);
+			} else {
+				dt = JSON.stringify(result);
+				res.status(200).json({
+					message: 'Token verified...',
+					dt
+				});
+			}
+		})
+		.catch(err => {
+			console.log(err); //res.send(err);
+			res.sendStatus(204);
+		})
+
+	});
+
 
 router
   .route('/photodo')

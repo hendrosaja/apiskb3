@@ -188,13 +188,11 @@ async function getDeliveryByDate(par) {
 
 async function getDeliveryDtl(par) {
 	try {
-		const data = await db.any(qso.delivery.getDetailDO, {par});
-		// for (let i = 0; i < data.length; i++) {
-		// 	data[i].tgl_dtz = moment(data[i].tgl).format('YYYY-MM-DD');
-		// 	data[i].shipment_dtz = moment(data[i].shipment_dt).format('YYYY-MM-DD');
-		// }
-		// console.log(data);
-		return data;
+		return db.task(async (t) => {
+			const data = await db.any(qso.delivery.getDetailDO, {par});
+			const note = await db.one(qso.delivery.getdofnote, {par});
+			return {data, note};
+		});
 	}
 	catch (error) {
 		console.log('DB Error:', error);
@@ -235,6 +233,16 @@ async function delPhoto(par) {
 async function setDelivered(par) {
 	try {
 		const data = await dbsfa.one(qso.delivery.setDelivered, { par });
+		return data;
+	} catch (error) {
+		console.log('DB Error :' + error);
+		return 'Error';
+	}
+};
+
+async function updateNotes(par) {
+	try {
+		const data = await db.any(qso.delivery.setdofnote, { par });
 		return data;
 	} catch (error) {
 		console.log('DB Error :' + error);
@@ -412,7 +420,8 @@ module.exports = {
 	getQuotationDtl, setQuotationStatus,
 	getSalesOrder, getSalesOrderDtl,
 	getStockByLocation,
-	getDeliveryByDate, getDeliveryDtl, getPhoto, addPhoto, delPhoto, setDelivered,
+	getDeliveryByDate, getDeliveryDtl, getPhoto, addPhoto, delPhoto, 
+	setDelivered, updateNotes,
 	getVisitPlan, addVisitPlan, 
 	getSalesVisit,addSalesVisit,cekVisit, getVisitDetail,
 	cekAttendance, addAttendance, getAttendance,
