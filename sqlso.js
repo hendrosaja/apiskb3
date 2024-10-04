@@ -186,6 +186,27 @@ async function getDeliveryByDate(par) {
 	}
 };
 
+async function getDeliveryByUser(par) {
+	try {
+		const data = await db.any(qso.delivery.getDObyDriver, {par});
+		if (data.length>0) {
+			var dof;
+			for (let i = 0; i < data.length; i++) {
+				data[i].tgl_dtz = moment(data[i].sj_date).format('YYYY-MM-DD');
+
+				dof = data[i].sjmd_no
+				const statdo = await dbsfa.any(qso.delivery.dofStatus, dof);
+				(statdo.length>0) ? data[i].status = 1 : data[i].status = 0;
+			}
+		}
+		//console.log(data);
+		return data;
+	}
+	catch (error) {
+		console.log('DB Error:', error);
+	}
+};
+
 async function getDeliveryDtl(par) {
 	try {
 		return db.task(async (t) => {
@@ -420,7 +441,8 @@ module.exports = {
 	getQuotationDtl, setQuotationStatus,
 	getSalesOrder, getSalesOrderDtl,
 	getStockByLocation,
-	getDeliveryByDate, getDeliveryDtl, getPhoto, addPhoto, delPhoto, 
+	getDeliveryByDate, getDeliveryByUser, getDeliveryDtl, 
+	getPhoto, addPhoto, delPhoto, 
 	setDelivered, updateNotes,
 	getVisitPlan, addVisitPlan, 
 	getSalesVisit,addSalesVisit,cekVisit, getVisitDetail,

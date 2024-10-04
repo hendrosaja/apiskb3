@@ -443,6 +443,43 @@ router
 	});
 
 router
+	.route('/deliverybyuser')
+	.get( (req, res) => {
+		var	profile = {
+			user      : req.body.userid,
+			url       : '/sales' + req.url || '',
+		}
+		const b  = req.body;
+
+		if (!b.custname) {
+			b.customer = '%'
+			//console.log(b);
+		} else {
+			b.customer = '%' + b.custname + '%';
+			console.log(b);
+		}
+
+		dm.getDeliveryByUser(b)
+		.then(data => {
+			//console.log(data)
+			dt = JSON.stringify(data);
+			res.status(200).json({
+				message: 'Token verified...',
+				dt
+			});
+		})
+		.catch( err => {
+			console.log('Route Error : ', err)
+			res.status(500).json({
+				message: 'Internal Server Error...',
+				dt : ''
+			});
+		})
+
+	});
+
+
+router
 	.route('/deliverydetail')
 	.get( (req, res) => {
 		const b  = req.body;
