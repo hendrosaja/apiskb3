@@ -425,7 +425,7 @@ router
 
 		dm.getDeliveryByDate(b)
 		.then(data => {
-			console.log(data)
+			//console.log(data)
 			dt = JSON.stringify(data);
 			res.status(200).json({
 				message: 'Token verified...',
